@@ -3,8 +3,8 @@
   <span>{{appName}}</span></a>
 </mat-toolbar>
 
-<mat-expansion-panel matRipple>
-    <mat-expansion-panel-header>
+<mat-expansion-panel>
+    <mat-expansion-panel-header matRipple>
       <mat-panel-title>Add Name For {{appName}}</mat-panel-title>
       <mat-panel-description>You can give us few names!</mat-panel-description>
     </mat-expansion-panel-header>
@@ -30,18 +30,18 @@
 
 <mat-form-field appearance="outline">
   <mat-label>Search For Names</mat-label>
-  <input matInput placeholder="Starting With" #searchJunnu>
+  <input matInput placeholder="Starting With" #searchJunnu (keyup)="onSearchInput()" [(ngModel)]="searchInput">
   <mat-icon matSuffix>search</mat-icon>
 </mat-form-field>
 <mat-progress-bar *ngIf="!isDataLoaded" mode="indeterminate"></mat-progress-bar>
 
 <mat-list>
-  <mat-list-item *ngFor="let name1 of namesList|searchNamesPipe:searchJunnu.value" matRipple>
+  <mat-list-item *ngFor="let name1 of namesList">
     <mat-card-title matLine>{{name1.name | titlecase}}</mat-card-title>
     <mat-card-subtitle matLine>{{name1.meaning}}</mat-card-subtitle>
   </mat-list-item>
 </mat-list>
-<mat-paginator *ngIf="isDataLoaded" [length]="datasource.length"
+<mat-paginator *ngIf="isDataLoaded" [length]="pageLength"
               [pageSize]="pageSize" [pageSizeOptions]="[10, 30, 50, 100]" 
               (page)="onPageChange($event)" showFirstLastButtons>
 </mat-paginator>

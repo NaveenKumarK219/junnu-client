@@ -18,8 +18,11 @@ export class AppComponent implements OnInit{
   isDataLoaded=false;
   junnuError;
   pageSize = 10;
+  pageLength = 100;
   pageEvent: PageEvent;
-  datasource:JunnuInfo[];
+  datasource: JunnuInfo[];
+  searchInput = '';
+  filteredData: JunnuInfo[];
 
   constructor(private httpClient:HttpClient, private snackbar: MatSnackBar) {
     this.junnuInfo = new JunnuInfo('','','Navin');
@@ -54,7 +57,14 @@ export class AppComponent implements OnInit{
     this.httpClient.get<JunnuInfo[]>('https://navs-api.herokuapp.com/junnu/get-names').subscribe(data =>{
       this.datasource = data;
       this.isDataLoaded = true;
-      this.namesList = this.datasource.slice(0, this.pageSize);
+      if(this.searchInput.trim()!=''){
+        this.filteredData = data.filter(info => info.name.startsWith(this.searchInput));
+        this.namesList = this.filteredData.slice(0, this.pageSize);
+        this.pageLength = this.filteredData.length;
+      } else{
+        this.namesList = this.datasource.slice(0, this.pageSize);
+        this.pageLength = this.datasource.length;
+      }
     });
     
   }
@@ -62,7 +72,18 @@ export class AppComponent implements OnInit{
   onPageChange(event){
     let firstCut = event.pageIndex * event.pageSize;
     let secondCut = firstCut + event.pageSize;
-    this.namesList = this.datasource.slice(firstCut, secondCut);
+    this.namesList = this.searchInput!=''? this.filteredData.slice(firstCut,secondCut):this.datasource.slice(firstCut, secondCut);
+  }
+
+  onSearchInput(){
+    if(this.searchInput.trim()!=''){
+      this.filteredData = this.datasource.filter(info => info.name.startsWith(this.searchInput));
+      this.namesList = this.filteredData.slice(0, this.pageSize);
+      this.pageLength = this.filteredData.length;
+    } else{
+      this.namesList = this.datasource.slice(0, this.pageSize);
+      this.pageLength = this.datasource.length;
+    }
   }
 
   getNamesLocal(){
